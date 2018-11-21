@@ -1,10 +1,9 @@
-﻿using System;
+﻿using DummyCalculator.Extensions;
+using DummyCalculator.Plugins.Abstractions;
+using System;
 using System.Diagnostics;
-using System.Collections.Generic;
 using System.IO;
-using System.Text;
 using System.Threading.Tasks;
-using DummyCalculator.Extensions;
 
 namespace DummyCalculator
 {
@@ -18,17 +17,25 @@ namespace DummyCalculator
 
             Console.WriteLine("[Master] Starting Calculator");
 
-            new Program().InvokeOperation(args[0], args.Slice<string, double>(1)).Wait();
+            var pluginLocation = Path.Combine(AppContext.BaseDirectory, "plugins");
+
+            var pluginManager = new PluginManager(new []{ pluginLocation });
+            pluginManager.RefreshPlugins();
+
+            var opType = GetOperationType(args[0]);
+            if (opType != OperationType.Undefined)
+            {
+                var (_, pluginDll) = pluginManager.GetPlugin(opType);
+                
+                new Program().InvokeOperation(pluginDll, args.Slice<string, double>(1)).Wait();
+            }
 
             Console.WriteLine("[Master] Calculation complete.");
             Console.ReadKey();
         }
 
-        private async Task InvokeOperation(string operationName, params double[] args)
+        private async Task InvokeOperation(string pluginDll, params double[] args)
         {
-            var pluginPath = Path.Combine(AppContext.BaseDirectory, "plugins");
-
-            var pluginDll = Path.Combine(pluginPath, operationName, $"{operationName}.dll");
             var pluginArgs = string.Join(" ", args);
 
             var startInfo = new ProcessStartInfo()
@@ -43,15 +50,39 @@ namespace DummyCalculator
 
             using (var process = Process.Start(startInfo))
             {
-                Console.WriteLine($"[Master] Command: {process.StartInfo.FileName} {process.StartInfo.Arguments}");
-
-                var reader = process.StandardOutput;
-                while (!reader.EndOfStream)
+                if (process != null)
                 {
-                    var line = await reader.ReadLineAsync();
+                    Console.WriteLine($"[Master] Command: {process.StartInfo.FileName} {process.StartInfo.Arguments}");
 
-                    Console.WriteLine($"[Plugin] {line}");
+                    var reader = process.StandardOutput;
+                    while (!reader.EndOfStream)
+                    {
+                        var line = await reader.ReadLineAsync();
+
+                        Console.WriteLine($"[Plugin] {line}");
+                    }
                 }
+            }
+        }
+
+        private static OperationType GetOperationType(string input)
+        {
+            switch (input.ToLower())
+            {
+                case "addition":
+                case "add":
+                case "plus":
+                case "+":
+                    return OperationType.Addition;
+                case "subtraction":
+                case "subtract":
+                case "minus":
+                case "-":
+                    return OperationType.Subtraction;
+                case "fibonacci":
+                    return OperationType.Fibonacci;
+                default:
+                    return OperationType.Undefined;
             }
         }
     }

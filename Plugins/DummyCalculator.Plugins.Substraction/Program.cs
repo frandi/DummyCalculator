@@ -1,6 +1,4 @@
 ﻿using DummyCalculator.Plugins.Abstractions;
-using System;
-using System.Linq;
 
 namespace DummyCalculator.Plugins.Substraction
 {
@@ -15,6 +13,8 @@ namespace DummyCalculator.Plugins.Substraction
         public override string Name => "Substraction";
 
         public override string OperatorSymbol => "-";
+
+        public override OperationType Type => OperationType.Subtraction;
 
         static void Main(string[] args)
         {

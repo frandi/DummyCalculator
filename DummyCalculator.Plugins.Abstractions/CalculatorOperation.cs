@@ -15,6 +15,8 @@ namespace DummyCalculator.Plugins.Abstractions
 
         public abstract string Name { get; }
 
+        public abstract OperationType Type { get; }
+
         public abstract string OperatorSymbol { get; }
 
         public abstract void Calculate();
