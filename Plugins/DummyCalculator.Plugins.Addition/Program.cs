@@ -1,5 +1,4 @@
 ﻿using DummyCalculator.Plugins.Abstractions;
-using System;
 
 namespace DummyCalculator.Plugins.Addition
 {
@@ -14,6 +13,8 @@ namespace DummyCalculator.Plugins.Addition
         public override string Name => "Addition";
 
         public override string OperatorSymbol => "+";
+
+        public override OperationType Type => OperationType.Addition;
 
         static void Main(string[] args)
         {

@@ -5,4 +5,8 @@
     <TargetFramework>netcoreapp2.1</TargetFramework>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\DummyCalculator.Plugins.Abstractions\DummyCalculator.Plugins.Abstractions.csproj" />
+  </ItemGroup>
+
 </Project>

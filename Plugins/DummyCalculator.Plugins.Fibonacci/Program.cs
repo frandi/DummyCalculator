@@ -8,7 +8,7 @@ namespace DummyCalculator.Plugins.Fibonacci
 {
     class Program : CalculatorOperation
     {
-        private List<int> _numbers;
+        private readonly List<int> _numbers;
 
         public Program(params string[] args)
             : base(args)
@@ -19,6 +19,8 @@ namespace DummyCalculator.Plugins.Fibonacci
         public override string Name => "Fibonacci";
 
         public override string OperatorSymbol => "|";
+
+        public override OperationType Type => OperationType.Fibonacci;
 
         static void Main(string[] args)
         {
